@@ -1,36 +1,39 @@
 <html>
-    <head>
-        <title>WeatherJS</title>
-        <style>
-            canvas {
-                border:4px solid blue;
-                background-color: aquamarine;
-            }
-            h1 {
-                border:2px solid black;
-                text-align: center;
-            }
-            p {
-                color:darkslategray;
-                margin-left: 40px;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Como está o clima aí?</h1>
-        <form action="/evaluate" method="post">
-            <div>
-                <label style="margin-left: 40px; color: red;" for="local">Local:</label>
-                <input type="text" id nome="local" />
-            </div>
-        </form>
-        <canvas id="condCnv" width="400" height="300">
 
-        </canvas>
-        <p class="condTxt"></p>
-        <p class="temp"></p>
-        <p>Dados provenientes de: <a href="https://www.visualcrossing.com/weather-api">Visual Crossing Weather API</a></p>
-        <script src="app.js"></script>
-    </body>
+<head>
+    <title>WeatherJS</title>
+    <style>
+        canvas {
+            border: 4px solid blue;
+        }
+
+        h1 {
+            border: 2px solid black;
+            text-align: center;
+        }
+
+        p {
+            color: darkslategray;
+            margin-left: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Como está o clima aí?</h1>
+    <form action="/evaluate" method="post">
+        <div>
+            <label style="margin-left: 40px; color: red;" for="local">Local:</label>
+            <input type="text" id nome="local" />
+        </div>
+    </form>
+    <canvas id="condCnv" width="400" height="300">
+        Clima
+    </canvas>
+    <p class="condTxt"></p>
+    <p class="temp"></p>
+    <p>Dados provenientes de: <a href="https://www.visualcrossing.com/weather-api">Visual Crossing Weather API</a></p>
+    <script src="app.js"></script>
+</body>
 
 </html>

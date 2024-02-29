@@ -1,8 +1,9 @@
 function evaluateCondition(condDisplay, conditionCodes) {
     let conArr = conditionCodes.replace(' ', '').split(',');
-    condDisplay.textContent = "COND:"
-    let imgArr = [];
     const time = new Date();
+    condDisplay.textContent = "HORA: " + time.getHours() + ":" + time.getMinutes() + " COND: "
+    let imgArr = [];
+    
 
     if (time.getHours() >= 18 || time.getHours() < 6) {
         imgArr[0] = new Image();
@@ -13,16 +14,20 @@ function evaluateCondition(condDisplay, conditionCodes) {
     }
 
     for (let i = 1; i < conArr.length + 1; i++) {
+        if (i > 1)
+        {
+            condDisplay.textContent.concat(" | ");
+        }
         switch (conArr[i]) {
             case "type_21":
                 console.log(conArr[i]);
-                condDisplay.textContent = condDisplay.textContent.concat("|", "CHUVA");
+                condDisplay.textContent = condDisplay.textContent.concat("CHUVA");
                 imgArr[i] = new Image();
                 imgArr[i].src = "img/rainy.png";
                 break;
             case "type_42":
                 console.log(conArr[i]);
-                condDisplay.textContent = condDisplay.textContent.concat("|", "NUBLADO");
+                condDisplay.textContent = condDisplay.textContent.concat("NUBLADO");
                 imgArr[i] = new Image();
                 imgArr[i].src = "img/cloudy.png";
                 break;

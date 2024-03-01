@@ -20,10 +20,10 @@
 
         div {
             background-color: dodgerblue;
-            border: 2px solid dodgerblue; 
+            border: 2px solid dodgerblue;
             outline: auto;
             width: 8cm;
-            height: 3cm;
+            height: 4cm;
         }
 
         h1 {
@@ -47,19 +47,21 @@
             border-image: url("img/border.png") 30 round;
         }
     </style>
-    
+
 </head>
 <h1>Como está o clima aí?</h1>
+
 <body>
     <form action="/evaluate" method="post">
         <div>
             <label for="local">Local:</label>
-            <input type="text" id nome="local" /><br>
-            <input type="radio" id="celc" name="temp" value="C"/>
+            <input type="text" id="localText" nome="local" /><br>
+            <input type="radio" id="celc" name="temp" value="C" />
             <label for="celc">Celsius:</label><br>
-            <input type="radio" id="fahr" name="temp" value="F"/>
+            <input type="radio" id="fahr" name="temp" value="F" />
             <label for="fahr">Fahrenheit:</label><br>
-            <input style="margin-top: 5px; height: 30px; width: 80;" type="submit" value="Submit">
+            <input style="margin-left: 5px; margin-top: 15px; height: 30px; width: 80;" type="button" value="Submit"
+                id="submitLocal">
         </div>
     </form>
     <canvas id="condCnv" width="400" height="300">

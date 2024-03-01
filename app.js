@@ -3,7 +3,7 @@ function evaluateCondition(condDisplay, conditionCodes) {
     const time = new Date();
     condDisplay.textContent = "HORA: " + time.getHours() + ":" + time.getMinutes() + " COND: "
     let imgArr = [];
-    
+
 
     if (time.getHours() >= 18 || time.getHours() < 6) {
         imgArr[0] = new Image();
@@ -14,8 +14,7 @@ function evaluateCondition(condDisplay, conditionCodes) {
     }
 
     for (let i = 1; i < conArr.length + 1; i++) {
-        if (i > 1)
-        {
+        if (i > 1) {
             condDisplay.textContent.concat(" | ");
         }
         switch (conArr[i]) {
@@ -56,6 +55,8 @@ async function getWeatherJSON(local) {
 
     } catch (error) {
         console.error("FAILURE - Weather data fetch request was a failure:", error);
+    } finally {
+
     }
 }
 
@@ -65,28 +66,40 @@ const condDisplay = document.querySelector('.condTxt');
 const canvas = document.getElementById("condCnv");
 const ctx = canvas.getContext("2d");
 
+//const buttonSubmitLocal = document.querySelector('#submitLocal')
+
+
 /*const image = new Image(200, 200);
 image.src = "img/sunny.png";
 
 image.onload = () => {
     ctx.drawImage(image, 75, 10, 250, 250);
 };*/
+//getWeatherJSON("MANAUS")
 
-getWeatherJSON("MANAUS").then((res) => {
-    let img = evaluateCondition(condDisplay, res.days[0].conditions);
-    tempDisplay.textContent = "TEMP MIN: " + res.days[0].tempmin + "°C TEMP MAX: " + res.days[0].tempmax + "°C";
+const local = document.querySelector('#localText')
+const buttonSubmitLocal = document.querySelector('#submitLocal')
 
-    const canvas = document.getElementById("condCnv");
-    let ctx = canvas.getContext("2d");
+buttonSubmitLocal.addEventListener('click', async (event) => {
+    console.log(event)
+    console.log(local.value);
+    getWeatherJSON(local.value).then((res) => {
+        let img = evaluateCondition(condDisplay, res.days[0].conditions);
+        tempDisplay.textContent = "TEMP MIN: " + res.days[0].tempmin + "°C TEMP MAX: " + res.days[0].tempmax + "°C";
 
-    img[0].onload = () => {
-        ctx.drawImage(img[0], 100, 10, 150, 150);
-    }
+        const canvas = document.getElementById("condCnv");
+        let ctx = canvas.getContext("2d");
 
-    for (let i = 1; i < img.length + 1; i++) {
-        img[i].onload = () => {
-            ctx.drawImage(img[i], 75, 40, 250, 250);
+        img[0].onload = () => {
+            ctx.drawImage(img[0], 100, 10, 150, 150);
         }
-        console.log("Imagem:" + img[i]);
-    }
+
+        for (let i = 1; i < img.length + 1; i++) {
+            img[i].onload = () => {
+                ctx.drawImage(img[i], 75, 40, 250, 250);
+            }
+            console.log("Imagem:" + img[i]);
+        }
+
+    });
 });

@@ -1,21 +1,23 @@
-function evaluateCondition(condDisplay, conditionCodes) {
+function calculateHourWithUTC(hours, tzoffset)
+{
+    let sumHours = hours + tzoffset;
+    if (sumHours > 23) {
+        return sumHours - 24;
+    }
+    return sumHours;
+}
+
+function evaluateCondition(time, tzoffset, condDisplay, conditionCodes) {
     let conArr = conditionCodes.replace(' ', '').split(',');
-    const time = new Date();
-    condDisplay.textContent = "HORA: " + time.getHours() + ":" + time.getMinutes() + " COND: "
+    condDisplay.textContent = " COND: "
     let imgArr = [];
 
-
-    if (time.getHours() >= 18 || time.getHours() < 6) {
+    if (calculateHourWithUTC(time.getUTCHours(), tzoffset) >= 18 || calculateHourWithUTC(time.getUTCHours(), tzoffset) < 6) {
         imgArr[0] = new Image();
         imgArr[0].src = "img/night.png";
     } else {
         imgArr[0] = new Image();
         imgArr[0].src = "img/sunny.png";
-    }
-
-    if (conArr.length === 0) {
-        condDisplay.textContent.concat("LIMPO");
-        return imgArr;
     }
 
     for (let i = 0; i < conArr.length; i++) {
@@ -70,6 +72,14 @@ function evaluateCondition(condDisplay, conditionCodes) {
                 imgArr[i+1] = new Image();
                 imgArr[i+1].src = "img/lightning.png";
                 break;
+            case "type_43":
+                console.log(conArr[i]);
+                condDisplay.textContent = condDisplay.textContent.concat("LIMPO");
+                break;
+            default:
+                console.log(conArr[i]);
+                condDisplay.textContent = condDisplay.textContent.concat(conArr[i]);
+                break;
         }
     }
     console.log(condDisplay.textContent);
@@ -89,7 +99,7 @@ async function getWeatherJSON(local, erroDisplay) {
     try {
         const response =
             await fetch("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" +
-                local + "/today?include=fcst%2Cobs%2Chistfcst%2Cstats%2Cdays&" +
+                local + "/today?include=fcst%2Cobs%2Chistfcst%2Cstats%2Cdays%2Chours&" +
                 "key=Y3KFJPKUUX6S8CX84GSXY9VJY&contentType=json&lang=id&unitGroup=metric", { // Here goes the URI of the API
                 "method": "GET",
                 "headers": {}
@@ -114,6 +124,7 @@ const tempDisplay = document.querySelector('.temp');
 const condDisplay = document.querySelector('.condTxt');
 const erroDisplay = document.querySelector('.errText');
 const addrDisplay = document.querySelector('.addrTxt');
+const timeDisplay = document.querySelector('.timeTxt');
 
 const canvas = document.getElementById("condCnv");
 const ctx = canvas.getContext("2d");
@@ -135,7 +146,9 @@ buttonSubmitLocal.addEventListener('click', async (event) => {
     }
 
     getWeatherJSON(local.value, erroDisplay).then(async (res) => {
-        let img = evaluateCondition(condDisplay, res.days[0].conditions);
+        let time = new Date();
+        let img = evaluateCondition(time, res.tzoffset, condDisplay, res.days[0].conditions);
+
         if (tempType === 'C') {
             // Maintain Celsius
             tempMed = res.days[0].temp;
@@ -160,6 +173,9 @@ buttonSubmitLocal.addEventListener('click', async (event) => {
         let ctx = canvas.getContext("2d");
 
         addrDisplay.textContent = res.resolvedAddress;
+
+        timeDisplay.textContent = "HORA: " + ("00" + (calculateHourWithUTC(time.getUTCHours(), res.tzoffset))).slice(-2)
+                                     + ":" + ("00" + time.getUTCMinutes()).slice(-2);
 
         ctx.clearRect(0, 0, 400, 300);
 

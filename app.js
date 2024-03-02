@@ -13,27 +13,62 @@ function evaluateCondition(condDisplay, conditionCodes) {
         imgArr[0].src = "img/sunny.png";
     }
 
-    if (conArr.length == 0) {
+    if (conArr.length === 0) {
         condDisplay.textContent.concat("LIMPO");
         return imgArr;
     }
 
-    for (let i = 1; i < conArr.length + 1; i++) {
-        if (i > 1) {
-            condDisplay.textContent.concat(" | ");
+    for (let i = 0; i < conArr.length; i++) {
+        if (i > 0) {
+            condDisplay.textContent = condDisplay.textContent.concat(" | ");
         }
         switch (conArr[i]) {
             case "type_21":
+            case "type_24":
+            case "type_25":
+            case "type_26":
+            case "type_2":
                 console.log(conArr[i]);
                 condDisplay.textContent = condDisplay.textContent.concat("CHUVA");
-                imgArr[i] = new Image();
-                imgArr[i].src = "img/rainy.png";
+                imgArr[i+1] = new Image();
+                imgArr[i+1].src = "img/rainy.png";
+                break;
+            case "type_41":
+                console.log(conArr[i]);
+                condDisplay.textContent = condDisplay.textContent.concat("NUBLADO");
+                imgArr[i+1] = new Image();
+                imgArr[i+1].src = "img/cloudy.png";
                 break;
             case "type_42":
                 console.log(conArr[i]);
-                condDisplay.textContent = condDisplay.textContent.concat("NUBLADO");
-                imgArr[i] = new Image();
-                imgArr[i].src = "img/cloudy.png";
+                condDisplay.textContent = condDisplay.textContent.concat("PARCIALMENTE NUBLADO");
+                imgArr[i+1] = new Image();
+                imgArr[i+1].src = "img/pcloudy.png";
+                break;
+            case "type_8":
+            case "type_19":
+                console.log(conArr[i]);
+                condDisplay.textContent = condDisplay.textContent.concat("NEBLINA");
+                imgArr[i+1] = new Image();
+                imgArr[i+1].src = "img/misty.png";
+                break;
+            case "type_31":
+            case "type_32": 
+            case "type_33":  
+            case "type_34":
+            case "type_35":
+                console.log(conArr[i]);
+                condDisplay.textContent = condDisplay.textContent.concat("NEVE");
+                imgArr[i+1] = new Image();
+                imgArr[i+1].src = "img/snowy.png";
+                break;
+            case "type_37":
+            case "type_38":
+            case "type_18":    
+                console.log(conArr[i]);
+                condDisplay.textContent = condDisplay.textContent.concat("TROVÕES");
+                imgArr[i+1] = new Image();
+                imgArr[i+1].src = "img/lightning.png";
                 break;
         }
     }
@@ -41,11 +76,20 @@ function evaluateCondition(condDisplay, conditionCodes) {
     return imgArr;
 }
 
+document.onload = () => (function() {
+    window.keydown(function(event){
+      if(event.keyCode == 13) {
+        event.preventDefault();
+        return false;
+      }
+    });
+});
+
 async function getWeatherJSON(local, erroDisplay) {
     try {
         const response =
             await fetch("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" +
-                local + "/today?include=fcst%2Cobs%2Chistfcst%2Cstats%2Cdays%2Chours&" +
+                local + "/today?include=fcst%2Cobs%2Chistfcst%2Cstats%2Cdays&" +
                 "key=Y3KFJPKUUX6S8CX84GSXY9VJY&contentType=json&lang=id&unitGroup=metric", { // Here goes the URI of the API
                 "method": "GET",
                 "headers": {}
@@ -69,6 +113,7 @@ async function getWeatherJSON(local, erroDisplay) {
 const tempDisplay = document.querySelector('.temp');
 const condDisplay = document.querySelector('.condTxt');
 const erroDisplay = document.querySelector('.errText');
+const addrDisplay = document.querySelector('.addrTxt');
 
 const canvas = document.getElementById("condCnv");
 const ctx = canvas.getContext("2d");
@@ -80,6 +125,9 @@ buttonSubmitLocal.addEventListener('click', async (event) => {
     let tempMed = 0, tempMin = 0, tempMax = 0;
     const tempType = document.forms.opt.elements.temp.value;
     erroDisplay.textContent = "";
+    addrDisplay.textContent = "";
+    condDisplay.textContent = "";
+    tempDisplay.textContent = "";
 
     if (local.value.length === 0) {
         erroDisplay.textContent = "AVISO - Escreva o nome de algum local no campo \"Local\"";
@@ -110,6 +158,8 @@ buttonSubmitLocal.addEventListener('click', async (event) => {
 
         const canvas = document.getElementById("condCnv");
         let ctx = canvas.getContext("2d");
+
+        addrDisplay.textContent = res.resolvedAddress;
 
         ctx.clearRect(0, 0, 400, 300);
 

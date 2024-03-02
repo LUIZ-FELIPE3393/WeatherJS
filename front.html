@@ -52,7 +52,7 @@
 <h1>Como está o clima aí?</h1>
 
 <body>
-    <form action="/evaluate" method="post">
+    <form name="opt">
         <div>
             <label for="local">Local:</label>
             <input type="text" id="localText" nome="local" /><br>
@@ -69,6 +69,7 @@
     </canvas>
     <p class="condTxt"></p>
     <p class="temp"></p>
+    <p class="errText" style="color:red"></p>
     <p>Dados provenientes de: <a href="https://www.visualcrossing.com/weather-api">Visual Crossing Weather API</a></p>
     <script src="app.js"></script>
 </body>

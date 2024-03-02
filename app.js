@@ -13,6 +13,11 @@ function evaluateCondition(condDisplay, conditionCodes) {
         imgArr[0].src = "img/sunny.png";
     }
 
+    if (conArr.length == 0) {
+        condDisplay.textContent.concat("LIMPO");
+        return imgArr;
+    }
+
     for (let i = 1; i < conArr.length + 1; i++) {
         if (i > 1) {
             condDisplay.textContent.concat(" | ");
@@ -36,7 +41,7 @@ function evaluateCondition(condDisplay, conditionCodes) {
     return imgArr;
 }
 
-async function getWeatherJSON(local) {
+async function getWeatherJSON(local, erroDisplay) {
     try {
         const response =
             await fetch("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" +
@@ -47,6 +52,7 @@ async function getWeatherJSON(local) {
             });
 
         if (!response.ok) {
+            erroDisplay.textContent = "AVISO - O Local não pôde ser encontrado, verifique a entrada";
             throw new Error("ERROR - HTTP response code isn't ok");
         }
         const weather = await response.json();
@@ -62,44 +68,60 @@ async function getWeatherJSON(local) {
 
 const tempDisplay = document.querySelector('.temp');
 const condDisplay = document.querySelector('.condTxt');
+const erroDisplay = document.querySelector('.errText');
 
 const canvas = document.getElementById("condCnv");
 const ctx = canvas.getContext("2d");
 
-//const buttonSubmitLocal = document.querySelector('#submitLocal')
-
-
-/*const image = new Image(200, 200);
-image.src = "img/sunny.png";
-
-image.onload = () => {
-    ctx.drawImage(image, 75, 10, 250, 250);
-};*/
-//getWeatherJSON("MANAUS")
-
-const local = document.querySelector('#localText')
-const buttonSubmitLocal = document.querySelector('#submitLocal')
+const local = document.querySelector('#localText');
+const buttonSubmitLocal = document.querySelector('#submitLocal');
 
 buttonSubmitLocal.addEventListener('click', async (event) => {
-    console.log(event)
-    console.log(local.value);
-    getWeatherJSON(local.value).then((res) => {
+    let tempMed = 0, tempMin = 0, tempMax = 0;
+    const tempType = document.forms.opt.elements.temp.value;
+    erroDisplay.textContent = "";
+
+    if (local.value.length === 0) {
+        erroDisplay.textContent = "AVISO - Escreva o nome de algum local no campo \"Local\"";
+        return;
+    }
+
+    getWeatherJSON(local.value, erroDisplay).then(async (res) => {
         let img = evaluateCondition(condDisplay, res.days[0].conditions);
-        tempDisplay.textContent = "TEMP MIN: " + res.days[0].tempmin + "°C TEMP MAX: " + res.days[0].tempmax + "°C";
+        if (tempType === 'C') {
+            // Maintain Celsius
+            tempMed = res.days[0].temp;
+            tempMin = res.days[0].tempmin;
+            tempMax = res.days[0].tempmax;
+            tempDisplay.textContent = "TEMP: " + tempMed.toFixed(1) + "°C" + " TEMP MIN: " + tempMin.toFixed(1)
+                + "°C" + " TEMP MAX: " + tempMax.toFixed(1) + "°C";
+        } else if (tempType === 'F') {
+            // Convert to fahrenheit
+            tempMed = res.days[0].temp * 1.8 + 32;
+            tempMin = res.days[0].tempmin * 1.8 + 32;
+            tempMax = res.days[0].tempmax * 1.8 + 32;
+            tempDisplay.textContent = "TEMP: " + tempMed.toFixed(1) + "°F" + " TEMP MIN: " + tempMin.toFixed(1)
+                + "°F" + " TEMP MAX: " + tempMax.toFixed(1) + "°F";
+        }
+        else {
+            // Display Error
+            erroDisplay.textContent = "AVISO - Selecione um tipo de temperatura.";
+        }
 
         const canvas = document.getElementById("condCnv");
         let ctx = canvas.getContext("2d");
 
+        ctx.clearRect(0, 0, 400, 300);
+
         img[0].onload = () => {
             ctx.drawImage(img[0], 100, 10, 150, 150);
-        }
 
-        for (let i = 1; i < img.length + 1; i++) {
-            img[i].onload = () => {
-                ctx.drawImage(img[i], 75, 40, 250, 250);
+            for (let i = 1; i < img.length + 1; i++) {
+                img[i].onload = () => {
+                    ctx.drawImage(img[i], 75, 40, 250, 250);
+                }
+                console.log("Imagem:" + img[i]);
             }
-            console.log("Imagem:" + img[i]);
         }
-
     });
 });
